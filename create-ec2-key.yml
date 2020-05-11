@@ -1,0 +1,21 @@
+- name: ec2-Key
+  hosts: localhost
+  gather_facts: false
+  connection : local
+
+  tasks:
+    - name: Create a new EC2 key
+      ec2_key:
+        name: devops-ec2-key
+        region: us-east-2
+      register: ec2_key
+
+    - debug:
+       var: ec2_key.key.private_key
+
+    - name: Save private key
+      copy: 
+        content: "{{ ec2_key.key.private_key }}"
+        dest: "./private.pem" 
+        mode: 0600
+      when: ec2_key.changed

@@ -1,0 +1,15 @@
+- hosts: localhost
+  gather_facts: False
+
+  tasks:
+    - name: Add all instance public IPs to host group
+      add_host: hostname=18.222.186.37 groups=ec2hosts
+
+    - hosts: ec2hosts
+      name: configuration play
+      user: ec2-user
+      gather_facts: true
+
+      tasks:
+        - name: Check NTP service
+          service: name=ntpd state=started

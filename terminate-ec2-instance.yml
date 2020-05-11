@@ -1,0 +1,22 @@
+- name: Terminate instances
+  hosts: localhost
+  tasks:
+    - name: Gather information about all instances
+      ec2_instance_info:
+        region: us-east-2
+      register: ec2_info
+    
+    - debug: var=ec2_info
+    - debug: msg="{{ ec2_info.instances | map(attribute='instance_id') | list }}"
+    
+    - name: Terminate instances that were previously launched
+      ec2:
+        instance_ids: "{{ ec2_info.instances | map(attribute='instance_id') | list }}"
+        region: us-east-2
+        state: 'absent'
+
+    - name: "Delete group by its name"
+      ec2_group:
+        region: us-east-2
+        name: default_linux_ec2
+        state: absent
